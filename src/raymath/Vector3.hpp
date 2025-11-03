@@ -14,7 +14,8 @@ public:
     //all operations for Vector3
     Vector3 operator+(const Vector3& v) const; 
     Vector3 operator-(const Vector3& v) const; 
-    Vector3 operator*(float t) const;           
+    Vector3 operator*(float t) const;
+    float operator*(const Vector3& other) const;           
     
     float Length() const;                   
     Vector3 Normalized() const;                
