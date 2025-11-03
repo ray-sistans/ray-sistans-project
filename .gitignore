@@ -2,3 +2,4 @@
 /out/
 CMakePresets.json
 .vscode/*
+output.png

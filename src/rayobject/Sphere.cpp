@@ -10,6 +10,7 @@ Sphere::Sphere(const Vector3 &c, float r, const Color &col)
 bool Sphere::intersect(const Ray &ray, Vector3 &intersectionPoint) const
 {
     // Calculate vector from ray origin to sphere center
+    //oc = origin - center of the sphere
     Vector3 oc = center - ray.origin;
 
     // Calculate dot product
@@ -22,10 +23,12 @@ bool Sphere::intersect(const Ray &ray, Vector3 &intersectionPoint) const
     }
 
     // Calculate point P on ray closest to sphere center
+    //op = Multiply the dot product with the ray's direction vector
     Vector3 op = ray.direction * dotProd;
     Vector3 p = ray.origin + op;
 
     // Calculate distance from P to sphere center
+    // cp = Displacement vector from c to p
     Vector3 cp = p - center;
     float lenCP = cp.Length();
 
