@@ -49,6 +49,14 @@ Color& Color::operator=(Color const& col) {
   return *this;
 }
 
+Color Color::operator*(float multiplier) const {
+  Color c;
+  c.r = fmax(fmin(r * multiplier, 1), 0);
+  c.g = fmax(fmin(g * multiplier, 1), 0);
+  c.b = fmax(fmin(b * multiplier, 1), 0);
+  return c;
+}
+
 /**
  * Here we implement the << operator :
  * We take each component and append it to he stream, giving it a nice form on the console
