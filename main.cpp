@@ -1,28 +1,50 @@
 #include <iostream>
+#include <vector>
+#include <cfloat>
 #include "Color.hpp"
 #include "Image.hpp"
 #include "Vector3.hpp"
 #include "Ray.hpp"
 #include "Camera.hpp"
-#include "Sphere.hpp"
+#include "../rayobject/Sphere.hpp"
+#include "../rayobject/Plane.hpp"
 
 using namespace std;
 
 // Cast a ray into the scene and return the color
-Color CastRay(const Ray &ray, const std::vector<Sphere> &spheres)
+Color CastRay(const Ray &ray, const std::vector<Sphere> &spheres, const Plane& floor)
 {
   Color pixelColor(0, 0.8, 0.8);
+  float closest_distance = FLT_MAX; 
+  bool didHit = false;
+
+  Vector3 hitPoint;
 
   // Check intersection with each sphere
   for (const auto &sphere : spheres)
   {
     Vector3 intersectionPoint;
-
-    if (sphere.intersect(ray, intersectionPoint))
-    {
-      pixelColor = sphere.color;
-    }
+ // les boucles servent a verifié la distance la plus proche
+    if (sphere.intersect(ray, hitPoint))
+        {
+            float dist = (hitPoint - ray.origin).Length();
+            if (dist < closest_distance) {
+                closest_distance = dist;
+                pixelColor = sphere.color;
+                didHit = true;
+            }
+        }
   }
+
+  if (floor.intersect(ray, hitPoint))
+    {
+        float dist = (hitPoint - ray.origin).Length();
+        if (dist < closest_distance) {
+            closest_distance = dist;
+            pixelColor = floor.color;
+            didHit = true;
+        }
+    }
 
   return pixelColor;
 }
@@ -35,6 +57,9 @@ int main()
   Image image(width, height, Color(0, 0, 0));
 
   Camera camera(width, height);
+
+  Plane floor(Vector3(0, -2.5, 0), Vector3(0, 1, 0), Color(0.1, 0.3, 0.1));
+
 
   // Sphere array
   std::vector<Sphere> spheres;
@@ -65,7 +90,7 @@ int main()
     {
       Ray ray = camera.getRay(x, y);
 
-      Color color = CastRay(ray, spheres);
+      Color color = CastRay(ray, spheres, floor);
 
       image.SetPixel(x, y, color);
     }

@@ -1,10 +1,8 @@
-#pragma once 
-
 #include <cmath> 
 #include "Plane.hpp"
 
-Plane::Plane(const Vector3& p, const Vector3& n)
-    :point(p), normal(n.Normalized())
+Plane::Plane(const Vector3& p, const Vector3& n, const Color& c)
+    :point(p), normal(n.Normalized()), color(c)
     {
 
     }
