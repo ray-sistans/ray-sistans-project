@@ -18,6 +18,7 @@ public:
   float B();
 
   Color operator+(Color const& col);
+  Color operator*(float multiplier) const;
   Color& operator=(Color const& col);
   friend std::ostream & operator<<(std::ostream & _stream, Color const & col);
 };
