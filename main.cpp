@@ -4,14 +4,14 @@
 #include <limits>      
 #include <algorithm>   
 #include <string>
-#include "src/raymath/Color.hpp"
-#include "src/rayimage/Image.hpp"
-#include "src/raymath/Vector3.hpp"
-#include "src/raymath/Ray.hpp"
-#include "src/raymath/Camera.hpp"
-#include "src/raymath/Light.hpp"
-#include "src/rayobject/Sphere.hpp"
-#include "src/rayobject/Plane.hpp"
+#include "Color.hpp"
+#include "Image.hpp"
+#include "Vector3.hpp"
+#include "Ray.hpp"
+#include "Camera.hpp"
+#include "Light.hpp"
+#include "Sphere.hpp"
+#include "Plane.hpp"
 
 
 using namespace std;
@@ -29,7 +29,7 @@ Color CastRay(const Ray &ray,
 
     Vector3 tempHitPoint; // Temporary variable for intersection tests
 
-    // Loop 1: Check all spheres
+    // Loop 1: Find the closest sphere
     for (const auto &sphere : spheres)
     {
         // Check if the ray intersects this specific sphere
