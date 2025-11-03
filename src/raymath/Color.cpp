@@ -57,10 +57,7 @@ Color Color::operator*(float multiplier) const {
   return c;
 }
 
-/**
- * Here we implement the << operator :
- * We take each component and append it to he stream, giving it a nice form on the console
- */
+
 std::ostream & operator<<(std::ostream & _stream, Color const & col) {  
   return _stream << "(" << col.r << "," << col.g << "," << col.b << ")";
 }
