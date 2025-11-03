@@ -49,10 +49,15 @@ Color& Color::operator=(Color const& col) {
   return *this;
 }
 
-/**
- * Here we implement the << operator :
- * We take each component and append it to he stream, giving it a nice form on the console
- */
+Color Color::operator*(float multiplier) const {
+  Color c;
+  c.r = fmax(fmin(r * multiplier, 1), 0);
+  c.g = fmax(fmin(g * multiplier, 1), 0);
+  c.b = fmax(fmin(b * multiplier, 1), 0);
+  return c;
+}
+
+
 std::ostream & operator<<(std::ostream & _stream, Color const & col) {  
   return _stream << "(" << col.r << "," << col.g << "," << col.b << ")";
 }
