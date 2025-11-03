@@ -13,7 +13,7 @@ using namespace std;
 // Cast a ray into the scene and return the color
 Color CastRay(const Ray &ray, const std::vector<Sphere> &spheres, const Light &light)
 {
-    Color pixelColor(0, 0, 0);  // Start with black
+    Color pixelColor(0, 0, 0); 
 
     float nearestSphere = 99999.0f;
     const Sphere* hitSphere = nullptr;
@@ -38,17 +38,20 @@ Color CastRay(const Ray &ray, const std::vector<Sphere> &spheres, const Light &l
     // If we hit something, calculate diffuse shading
     if (hitSphere != nullptr)
     {
+        //cp = point - sphere.c
         Vector3 normal = (hitPoint - hitSphere->center).Normalized();
         
+        //pl = light - point
         Vector3 lightDir = (light.position - hitPoint).Normalized();
 
-        float diffuse = normal * lightDir;
+        //using dot product to get intensity
+        float intensity = normal * lightDir;
         
-        pixelColor = hitSphere->color * diffuse;  
+        //final color = colorAmbiant + intensity
+        pixelColor = hitSphere->color * intensity;
     }
     else
     {
-        // Cyan bg if no hit
         pixelColor = Color(0, 0.8, 0.8);
     }
 
@@ -80,6 +83,7 @@ int main()
 
   // Yellow front left
   spheres.push_back(Sphere(Vector3(-2, -1.5, 10), 1.0f, Color(1, 1, 0)));
+
   // purple middle left
   spheres.push_back(Sphere(Vector3(-2, -1, 15), 1.0f, Color(1, 0, 1)));
 
