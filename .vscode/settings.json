@@ -53,5 +53,6 @@
     "variant": "cpp",
     "vector": "cpp",
     "algorithm": "cpp"
-  }
+  },
+  "cmake.sourceDirectory": "C:/Users/tigre/OneDrive/Bureau/dev/ray-sistans-project"
 }
