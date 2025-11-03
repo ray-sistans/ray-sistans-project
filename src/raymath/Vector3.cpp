@@ -34,3 +34,8 @@ Vector3 Vector3::Normalized() const {
 Vector3 operator*(float t, const Vector3& v) {
     return v * t;
 }
+
+// Dot product (vector * vector)
+float Vector3::operator*(const Vector3& other) const {
+    return x * other.x + y * other.y + z * other.z;
+}
