@@ -69,24 +69,21 @@ Color CastRay(const Ray &ray,
         }
     }
 
-    // This part only runs if the ray actually hit something (a sphere OR the floor)
     if (didHit)
     {
         // Calculate the direction vector from the hit point *to* the light source
         Vector3 lightDir = (light.position - hitPoint).Normalized();
 
-        // Calculate the diffuse intensity using Lambert's cosine law (dot product)
-        // std::max(0.0f, ...) ensures the light is not "negative" if it's behind the surface
-        float diffuse = std::max(0.0f, hitNormal * lightDir);
+        // Calculate the diffuse intensity (dot product)
+        float diffuse = hitNormal * lightDir;
         
         // Final color = Ambient light + Diffuse light
-        // We simulate a 10% ambient light (0.1f) so shadows aren't pure black,
-        // and 90% diffuse light (0.9f).
-        return hitColor * (0.1f + 0.9f * diffuse);
+        // We simulate a 50% ambient light (0.5f) so shadows aren't pure black,
+        // and 50% diffuse light (0.5f).
+        return hitColor * (0.5f + 0.5f * diffuse);
     }
     
-    // If the ray hit nothing (didHit == false), return the sky color
-    return Color(0, 0.8, 0.8); // Cyan background
+    return Color(0, 0.8, 0.8); // Default cyan background
 }
 
 
@@ -104,7 +101,7 @@ int main()
 
     // Define the floor plane (position on plane, normal vector, color)
     // A dark green floor at Y = -2.5, facing upwards (normal = 0,1,0)
-    Plane floor(Vector3(0, -2.5, 0), Vector3(0, 1, 0), Color(0.1, 0.3, 0.1));
+    Plane floor(Vector3(0, -2.5, 0), Vector3(0, 1, 0), Color(0.8, 0.8, 0.8));
 
     // Create a dynamic list of spheres
     std::vector<Sphere> spheres;
