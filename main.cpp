@@ -13,22 +13,22 @@ using namespace std;
 // Cast a ray into the scene and return the color
 Color CastRay(const Ray &ray, const std::vector<Sphere> &spheres, const Light &light)
 {
-    Color pixelColor(0, 0, 0);  // Start with black
+    Color pixelColor(0, 0, 0); 
 
-    float closestT = std::numeric_limits<float>::max();
+    float nearestSphere = 99999.0f;
     const Sphere* hitSphere = nullptr;
     Vector3 hitPoint;
 
-    // Find the closest intersection
+    // Find the closest sphere to the camera
     for (const auto &sphere : spheres)
     {
         Vector3 intersectionPoint;
         if (sphere.intersect(ray, intersectionPoint))
         {
-            float t = (intersectionPoint - ray.origin).Length();
-            if (t < closestT)
+            float sphereDistance = (intersectionPoint - ray.origin).Length();
+            if (sphereDistance < nearestSphere)
             {
-                closestT = t;
+                nearestSphere = sphereDistance;
                 hitSphere = &sphere;
                 hitPoint = intersectionPoint;
             }
@@ -38,21 +38,20 @@ Color CastRay(const Ray &ray, const std::vector<Sphere> &spheres, const Light &l
     // If we hit something, calculate diffuse shading
     if (hitSphere != nullptr)
     {
-        // Calculate normal at intersection point
+        //cp = point - sphere.c
         Vector3 normal = (hitPoint - hitSphere->center).Normalized();
         
-        // Calculate direction to light
+        //pl = light - point
         Vector3 lightDir = (light.position - hitPoint).Normalized();
 
-        // Diffuse intensity (Lambertian reflection)
-        float diffuse = std::max(0.0f, normal * lightDir);
+        //using dot product to get intensity
+        float intensity = normal * lightDir;
         
-        // Final color = ambient + diffuse
-        pixelColor = hitSphere->color * (0.1f + 0.9f * diffuse);  // 0.1 ambient, 0.9 diffuse
+        //final color = colorAmbiant + intensity
+        pixelColor = hitSphere->color * intensity;
     }
     else
     {
-        // Cyan bg if no hit
         pixelColor = Color(0, 0.8, 0.8);
     }
 
@@ -84,6 +83,7 @@ int main()
 
   // Yellow front left
   spheres.push_back(Sphere(Vector3(-2, -1.5, 10), 1.0f, Color(1, 1, 0)));
+
   // purple middle left
   spheres.push_back(Sphere(Vector3(-2, -1, 15), 1.0f, Color(1, 0, 1)));
 
