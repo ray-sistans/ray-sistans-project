@@ -57,6 +57,9 @@ Color Color::operator*(float multiplier) const {
   return c;
 }
 
+Color operator*(float scalar, const Color& color) {
+  return color * scalar; 
+}
 
 std::ostream & operator<<(std::ostream & _stream, Color const & col) {  
   return _stream << "(" << col.r << "," << col.g << "," << col.b << ")";

@@ -20,6 +20,7 @@ public:
   Color operator+(Color const& col);
   Color operator*(float multiplier) const;
   Color& operator=(Color const& col);
+  friend Color operator*(float scalar, const Color& c);
   friend std::ostream & operator<<(std::ostream & _stream, Color const & col);
 };
 
