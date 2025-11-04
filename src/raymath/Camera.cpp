@@ -18,12 +18,12 @@ Camera::Camera(const Vector3 &pos, const Vector3 &dir, int w, int h)
 void Camera::initialize(const Vector3& pos, const Vector3& lookDir) {
     position = pos;
 
-    float aspect_ratio = (float)imageWidth / (float)imageHeight;
+    float aspectRatio = (float)imageWidth / (float)imageHeight;
 
     // Déterminer les dimensions du viewport
     // normY va de -1 à 1, donc la hauteur est de 2.0
     float viewportHeight = 2.0f; 
-    float viewportWidth = viewportHeight * aspect_ratio;
+    float viewportWidth = viewportHeight * aspectRatio;
     
     // "focalLength" est la distance Z (4.0f) de votre ancienne logique
     float focalLength = 4.0f; 
