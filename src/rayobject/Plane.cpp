@@ -7,23 +7,17 @@ Plane::Plane(const Vector3& p, const Vector3& n, const Color& c)
 
     }
 
-    bool Plane::intersect(const Ray& r, Vector3& intersectionPoint) const {
-
-        float denom = r.direction * normal;
-
-        if(std::abs(denom) < 1e-6) {
-            return false;
+    bool Plane::intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const {
+        float denom = normal * r.direction;
+        if (std::abs(denom) > 1e-6) {
+            float t = ((point - r.origin) * normal) / denom;
+            if (t > t_min && t < t_max) {
+                rec.t = t;
+                rec.point = r.pointAt(t);
+                rec.normal = normal;
+                rec.color = color;
+                return true;
+            }
         }
-
-        float num = (point - r.origin) * normal;
-
-        float t = num / denom;
-
-        if (t < 1e-6){
-            return false;
-        }
-
-        intersectionPoint = r.pointAt(t);
-
-        return true;
+        return false;
     }

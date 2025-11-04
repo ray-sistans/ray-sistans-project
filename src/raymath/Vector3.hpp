@@ -25,6 +25,7 @@ public:
     Vector3 Cross(const Vector3& v) const;
 
     float Length() const;                
+    float LengthSq() const;
     Vector3 Normalized() const;            
 };
 

@@ -7,39 +7,29 @@ Sphere::Sphere()
 Sphere::Sphere(const Vector3 &c, float r, const Color &col)
     : center(c), radius(r), color(col) {}
 
-bool Sphere::intersect(const Ray &ray, Vector3 &intersectionPoint) const
-{
-    // Calculate vector from ray origin to sphere center
-    //oc = origin - center of the sphere
-    Vector3 oc = center - ray.origin;
+bool Sphere::intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const {
+    Vector3 oc = r.origin - center;
+    float a = r.direction.LengthSq();
+    float half_b = oc * r.direction;
+    float c = oc.LengthSq() - radius*radius;
 
-    // Calculate dot product
-    float dotProd = oc * ray.direction;
+    float discriminant = half_b*half_b - a*c;
+    if (discriminant < 0) return false;
+    float sqrtd = sqrt(discriminant);
 
-    // If negative, sphere is behind the ray
-    if (dotProd < 0)
-    {
-        return false;
+    // Find the nearest root that lies in the acceptable range.
+    float root = (-half_b - sqrtd) / a;
+    if (root < t_min || t_max < root) {
+        root = (-half_b + sqrtd) / a;
+        if (root < t_min || t_max < root)
+            return false;
     }
 
-    // Calculate point P on ray closest to sphere center
-    //op = Multiply the dot product with the ray's direction vector
-    Vector3 op = ray.direction * dotProd;
-    Vector3 p = ray.origin + op;
-
-    // Calculate distance from P to sphere center
-    // cp = Displacement vector from c to p
-    Vector3 cp = p - center;
-    float lenCP = cp.Length();
-
-    if (lenCP > radius)
-    {
-        return false;
-    }
-
-    // Calculate exact intersection point
-    float a = std::sqrt(radius * radius - lenCP * lenCP);
-    intersectionPoint = p + (ray.direction * (-a));
+    rec.t = root;
+    rec.point = r.pointAt(rec.t);
+    Vector3 outward_normal = (rec.point - center) * (1.0f / radius);
+    rec.normal = outward_normal;
+    rec.color = color;
 
     return true;
 }
