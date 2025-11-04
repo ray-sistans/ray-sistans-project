@@ -1,5 +1,5 @@
-#include <iostream>
 #include <cmath>
+#include <algorithm> 
 #include "Color.hpp"
 
 Color:: Color() : r(0), b(0), g(0)
@@ -14,32 +14,12 @@ Color::~ Color()
 {
 }
 
-float Color::R()
-{
-  return r;
+Color Color::operator+(Color const& col) const {
+    return Color(r + col.r, g + col.g, b + col.b);
 }
 
-float Color::G()
-{
-  return g;
-}
-
-float Color::B()
-{
-  return b;
-}
-
-/**
- * Implementation of the + operator :
- * Adding two colors is done by just adding the different components together :
- * (r1, g1, b1) + (r2, g2, b2) = (r1 + r2, g1 + g2, b1 + b2)
- */
-Color Color::operator+(Color const& col) {
-  Color c;
-  c.r = fmax(fmin(r + col.r, 1), 0);
-  c.g = fmax(fmin(g + col.g, 1), 0);
-  c.b = fmax(fmin(b + col.b, 1), 0);
-  return c;
+Color Color::operator*(float multiplier) const {
+    return Color(r * multiplier, g * multiplier, b * multiplier);
 }
 
 Color& Color::operator=(Color const& col) {
@@ -49,19 +29,31 @@ Color& Color::operator=(Color const& col) {
   return *this;
 }
 
-Color Color::operator*(float multiplier) const {
-  Color c;
-  c.r = fmax(fmin(r * multiplier, 1), 0);
-  c.g = fmax(fmin(g * multiplier, 1), 0);
-  c.b = fmax(fmin(b * multiplier, 1), 0);
-  return c;
-}
-
 Color operator*(float scalar, const Color& color) {
-  return color * scalar; 
+    return color * scalar; 
 }
 
 std::ostream & operator<<(std::ostream & _stream, Color const & col) {  
   return _stream << "(" << col.r << "," << col.g << "," << col.b << ")";
 }
 
+Color& Color::operator+=(Color const& col) {
+    r += col.r;
+    g += col.g;
+    b += col.b;
+    return *this;
+}
+
+// Averages color (pixel_color / 100)
+ 
+Color Color::operator/(float t) const {
+    return Color(r / t, g / t, b / t);
+}
+
+// On appelle cette fonction UNE SEULE FOIS à la fin.
+ 
+void Color::clamp(float min, float max) {
+    r = std::clamp(r, min, max);
+    g = std::clamp(g, min, max);
+    b = std::clamp(b, min, max);
+}
