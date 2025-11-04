@@ -16,7 +16,19 @@
 
 using namespace std;
 
-Color CastRay(const Ray &ray, const std::vector<Object*>& objects, const Light& light){
+Vector3 Reflect(const Vector3& direction, const Vector3& normal)
+{
+    //Formula : reflect = direction - 2(direction * normal)normal
+    float projection = direction * normal;  // Produit scalaire
+    return direction - 2.0f * projection * normal;
+}
+
+Color CastRay(
+  const Ray &ray, 
+  const std::vector<Object*>& objects, 
+  const Light& light, 
+  int reflect = 0) 
+  {
     float nearestObject = 99999.0f; // Start with "infinity"
     bool didHit = false;
     
@@ -47,15 +59,28 @@ Color CastRay(const Ray &ray, const std::vector<Object*>& objects, const Light& 
         Vector3 lightDir = (light.position - hitPoint).Normalized();
 
         // Calculate the diffuse intensity (dot product)
-        float diffuse = hitNormal * lightDir;
+        float intensity = hitNormal * lightDir;
         
         // Final color = Ambient light + Diffuse light
-        // We simulate a 50% ambient light (0.5f) so shadows aren't pure black,
-        // and 50% diffuse light (0.5f).
-        return hitColor * (0.5f + 0.5f * diffuse);
+        Color finalColor = hitColor * (0.1f + 0.9f * intensity);
+        
+        if (reflect < 4)
+        {
+            Vector3 reflectDir = Reflect(ray.direction, hitNormal);
+
+            Ray reflectRay(hitPoint + hitNormal * 0.001f, reflectDir);
+            
+            // cast the reflection ray
+            Color reflectedColor = CastRay(reflectRay, objects, light, reflect + 1);
+
+            // intensity of the reflection
+            finalColor = finalColor + 0.5f * reflectedColor;
+        }
+        return finalColor;
     }
     
-    return Color(0, 0.8, 0.8); // Default cyan background
+    // If the ray hit nothing (didHit == false)
+    return Color(0, 0, 0); 
 }
 
 
