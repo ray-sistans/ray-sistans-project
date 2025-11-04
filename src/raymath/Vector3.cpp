@@ -20,6 +20,10 @@ float Vector3::Length() const {
     return std::sqrt(x * x + y * y + z * z);
 }
 
+float Vector3::LengthSq() const {
+    return x * x + y * y + z * z;
+}
+
 //Normalization of a directional vector (longueur 1)
 Vector3 Vector3::Normalized() const {
     float len = Length();

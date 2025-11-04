@@ -12,6 +12,7 @@
 #include "Light.hpp"
 #include "Sphere.hpp"
 #include "Plane.hpp"
+#include "HitRecord.hpp"
 
 
 using namespace std;
@@ -23,52 +24,36 @@ Vector3 Reflect(const Vector3& direction, const Vector3& normal)
     return direction - 2.0f * projection * normal;
 }
 
-Color CastRay(
-  const Ray &ray, 
-  const std::vector<Object*>& objects, 
-  const Light& light, 
-  int reflect = 0) 
-  {
-    float nearestObject = 99999.0f; // Start with "infinity"
+Color CastRay(const Ray &ray, const std::vector<Object*>& objects, const Light& light, int reflect = 0){
+    HitRecord finalRec;
+    float closest_t = FLT_MAX;
     bool didHit = false;
-    
-    Vector3 hitPoint;   // Final intersection point of the *closest* object
-    Color   hitColor;   // Color of the *closest* object
-    Vector3 hitNormal;  // Surface normal of the *closest* object (for lighting)
 
-    Vector3 tempHitPoint; // Temporary variable for intersection tests
-
-    // Loop 1: Find the closest sphere
-    for (const auto& obj : objects) {
-      Vector3 tempHitPoint;
-      if (obj->intersect(ray, tempHitPoint)) {
-          float objectDistance = (tempHitPoint - ray.origin).Length();
-          if (objectDistance < nearestObject) {
-              nearestObject = objectDistance;
-              hitPoint = tempHitPoint;
-              hitColor = obj->getColor();
-              hitNormal = obj->getNormal(hitPoint);
-              didHit = true;
-          }
-      }
-  }
+    for (const auto &obj : objects) {
+        HitRecord tempRec;
+        if (obj->intersect(ray, 0.001f, closest_t, tempRec)) {
+            didHit = true;
+            closest_t = tempRec.t;
+            finalRec = tempRec;
+        }
+    }
 
     if (didHit)
     {
         // Calculate the direction vector from the hit point *to* the light source
-        Vector3 lightDir = (light.position - hitPoint).Normalized();
+        Vector3 lightDir = (light.position - finalRec.point).Normalized();
 
         // Calculate the diffuse intensity (dot product)
-        float intensity = hitNormal * lightDir;
+        float intensity = finalRec.normal * lightDir;
         
         // Final color = Ambient light + Diffuse light
-        Color finalColor = hitColor * (0.1f + 0.9f * intensity);
+        Color finalColor = finalRec.color * (0.1f + 0.9f * intensity);
         
         if (reflect < 4)
         {
-            Vector3 reflectDir = Reflect(ray.direction, hitNormal);
+            Vector3 reflectDir = Reflect(ray.direction, finalRec.normal).Normalized();
 
-            Ray reflectRay(hitPoint + hitNormal * 0.001f, reflectDir);
+            Ray reflectRay(finalRec.point + finalRec.normal * 0.001f, reflectDir);
             
             // cast the reflection ray
             Color reflectedColor = CastRay(reflectRay, objects, light, reflect + 1);

@@ -18,6 +18,7 @@ public:
     float operator*(const Vector3& other) const;           
     
     float Length() const;                   
+    float LengthSq() const;
     Vector3 Normalized() const;                
 };
 
