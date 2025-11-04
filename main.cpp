@@ -25,38 +25,38 @@ Vector3 Reflect(const Vector3& direction, const Vector3& normal)
     return direction - 2.0f * projection * normal;
 }
 
-Color CastRay(const Ray &ray, const std::vector<Object*>& objects, const Light& light, int reflect = 0){
-    HitRecord finalRec;
-    float closest_t = FLT_MAX;
+Color castRay(const Ray &ray, const std::vector<Object*>& objects, const Light& light, int recursionDepth = 0){
+    HitRecord closestHitRecord;
+    float closestIntersection = FLT_MAX;
     bool didHit = false;
 
     for (const auto &obj : objects) {
-        HitRecord tempRec;
-        if (obj->intersect(ray, 0.001f, closest_t, tempRec)) {
+        HitRecord tempHitRecord;
+        if (obj->intersect(ray, 0.001f, closestIntersection, tempHitRecord)) {
             didHit = true;
-            closest_t = tempRec.t;
-            finalRec = tempRec;
+            closestIntersection = tempHitRecord.t;
+            closestHitRecord = tempHitRecord;
         }
     }
 
     if (didHit)
     {
         // Calculate the direction vector from the hit point *to* the light source
-        Vector3 lightDir = (light.position - finalRec.point).Normalized();
+        Vector3 lightDirection = (light.position - closestHitRecord.point).Normalized();
 
         // Calculate the diffuse intensity (dot product)
-        float intensity = std::max(0.0f, finalRec.normal * lightDir); // intensité n'est pas négative
+        float diffuseIntensity = std::max(0.0f, closestHitRecord.normal * lightDirection); // intensité n'est pas négative
         
         // Final color = Ambient light + Diffuse light
-        Color finalColor = finalRec.color * (0.1f + 0.9f * intensity);
+        Color finalColor = closestHitRecord.color * (0.1f + 0.9f * diffuseIntensity);
         
-        if (reflect < 4)
+        if (recursionDepth < 4)
         {
-            Vector3 reflectDir = Reflect(ray.direction, finalRec.normal).Normalized();
+            Vector3 reflectionDirection = Reflect(ray.direction, closestHitRecord.normal).Normalized();
 
-            Ray reflectRay(finalRec.point + finalRec.normal * 0.001f, reflectDir);
+            Ray reflectionRay(closestHitRecord.point + closestHitRecord.normal * 0.001f, reflectionDirection);
             
-            Color reflectedColor = CastRay(reflectRay, objects, light, reflect + 1);
+            Color reflectedColor = castRay(reflectionRay, objects, light, recursionDepth + 1);
 
             // intensity of the reflection (0.5 = 50% de réflectivité)
             finalColor = finalColor + 0.5f * reflectedColor;
@@ -107,7 +107,7 @@ int main()
                 Ray ray = camera.getRay(x, y);
                 
                 // 4. Lancer le rayon et ACCUMULER la couleur
-                pixelColor += CastRay(ray, objects, light);
+                pixelColor += castRay(ray, objects, light);
             }
             
             // 5. Faire la MOYENNE de toutes les couleurs
@@ -129,4 +129,3 @@ int main()
 
     return 0;
 }
-
