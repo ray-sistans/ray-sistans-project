@@ -1,21 +1,21 @@
 #include <cmath> 
 #include "Plane.hpp"
 
-Plane::Plane(const Vector3& p, const Vector3& n, const Color& c)
-    :point(p), normal(n.Normalized()), color(c)
+Plane::Plane(const Vector3& pointOnPlane, const Vector3& normalVector, const Color& planeColor)
+    :point(pointOnPlane), normal(normalVector.Normalized()), color(planeColor)
     {
 
     }
 
-    bool Plane::intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const {
-        float denom = normal * r.direction;
-        if (std::abs(denom) > 1e-6) {
-            float t = ((point - r.origin) * normal) / denom;
-            if (t > t_min && t < t_max) {
-                rec.t = t;
-                rec.point = r.pointAt(t);
-                rec.normal = normal;
-                rec.color = color;
+    bool Plane::intersect(const Ray& ray, float tMin, float tMax, HitRecord& hitRecord) const {
+        float denominator = normal * ray.direction;
+        if (std::abs(denominator) > 1e-6) { // Check if the ray is not parallel to the plane
+            float intersectionT = ((point - ray.origin) * normal) / denominator;
+            if (intersectionT > tMin && intersectionT < tMax) {
+                hitRecord.t = intersectionT;
+                hitRecord.point = ray.pointAt(intersectionT);
+                hitRecord.normal = normal;
+                hitRecord.color = color;
                 return true;
             }
         }
