@@ -23,7 +23,7 @@ int main()
 {
     const int width = 1920;
     const int height = 1080;
-    const int samplesPerPixel = 1;
+    const int samplesPerPixel = 10;
 
     const auto start = chrono::steady_clock::now();
 
