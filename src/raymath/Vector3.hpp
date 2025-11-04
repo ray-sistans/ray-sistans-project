@@ -15,10 +15,17 @@ public:
     Vector3 operator+(const Vector3& v) const; 
     Vector3 operator-(const Vector3& v) const; 
     Vector3 operator*(float t) const;
-    float operator*(const Vector3& other) const;           
+    float operator*(const Vector3& other) const; 
+
+    // Opérateurs pour l'Anti-Aliasing
+    Vector3& operator+=(const Vector3& v);
+    Vector3 operator/(float t) const;
     
-    float Length() const;                   
-    Vector3 Normalized() const;                
+    //  Calculates the cross product (produit vectoriel)
+    Vector3 Cross(const Vector3& v) const;
+
+    float Length() const;                
+    Vector3 Normalized() const;            
 };
 
 //rayon = o + t*d

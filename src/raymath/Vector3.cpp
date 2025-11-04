@@ -30,7 +30,6 @@ Vector3 Vector3::Normalized() const {
 }
 
 //complement for rayon = o + t*d
-//travel t units in the direction of our ray
 Vector3 operator*(float t, const Vector3& v) {
     return v * t;
 }
@@ -39,3 +38,29 @@ Vector3 operator*(float t, const Vector3& v) {
 float Vector3::operator*(const Vector3& other) const {
     return x * other.x + y * other.y + z * other.z;
 }
+Vector3& Vector3::operator+=(const Vector3& v) {
+    x += v.x;
+    y += v.y;
+    z += v.z;
+    return *this;
+}
+
+Vector3 Vector3::operator/(float t) const {
+    float invT = 1.0f / t;
+    return Vector3(x * invT, y * invT, z * invT);
+}
+/*
+Calculates the cross product (produit vectoriel)
+ * Formule :
+ * cx = ay*bz - az*by
+ * cy = az*bx - ax*bz
+ * cz = ax*by - ay*bx
+ */
+Vector3 Vector3::Cross(const Vector3& v) const {
+    return Vector3(
+        y * v.z - z * v.y,
+        z * v.x - x * v.z,
+        x * v.y - y * v.x
+    );
+}
+
