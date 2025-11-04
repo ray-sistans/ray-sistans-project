@@ -11,16 +11,16 @@ public:
     Ray getRay(int x, int y) const;
 
 private:
-    int image_width;
-    int image_height;
+    int imageWidth;
+    int imageHeight;
     Vector3 position;
-    Vector3 pixel00_loc;      // Emplacement du pixel (0, 0)
-    Vector3 pixel_delta_u;    // Décalage vers le pixel de droite (x+1)
-    Vector3 pixel_delta_v;    // Décalage vers le pixel du bas (y+1)
+    Vector3 pixel00Loc;      // Emplacement du pixel (0, 0)
+    Vector3 pixelXincrement;    // Décalage vers le pixel de droite (x+1)
+    Vector3 pixelYIncrement;    // Décalage vers le pixel du bas (y+1)
 
     //initialize grid of pixels
-    void initialize(const Vector3& pos, const Vector3& look_dir);
+    void initialize(const Vector3& pos, const Vector3& lookDir);
     // Retourne un vecteur aléatoire dans le carré [-0.5, +0.5]
-    Vector3 sample_square() const;
+    Vector3 sampleSquare() const;
 };
 

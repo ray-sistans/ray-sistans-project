@@ -20,7 +20,7 @@ inline float randomFloat(float min, float max) {
 const float infinity = std::numeric_limits<float>::infinity();
 const float pi = 3.1415926535897932385f;
 
-inline float degrees_to_radians(float degrees) {
+inline float degreesToRadians(float degrees) {
     return degrees * pi / 180.0f;
 }
 

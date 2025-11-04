@@ -87,7 +87,7 @@ int main()
 {
     const int width = 1920;
     const int height = 1080;
-    const int samples_per_pixel = 100;
+    const int samplesPerPixel = 10;
 
     const Light light = Light(Vector3(0, 10, 10), Color(1, 1, 1));
     Image image(width, height, Color(0, 0, 0));
@@ -102,7 +102,7 @@ int main()
     objects.push_back(new Plane(Vector3(0, -2.5, 0), Vector3(0, 1, 0), Color(0.8, 0.8, 0.8)));
 
     cout << "Rendering " << width << "x" << height << " with " 
-         << samples_per_pixel << " samples per pixel..." << endl;
+         << samplesPerPixel << " samples per pixel..." << endl;
 
     for (int y = 0; y < height; ++y)
     {
@@ -113,24 +113,24 @@ int main()
 
         for (int x = 0; x < width; ++x)
         {
-            Color pixel_color(0, 0, 0);
+            Color pixelColor(0, 0, 0);
 
-            for (int s = 0; s < samples_per_pixel; ++s)
+            for (int s = 0; s < samplesPerPixel; ++s)
             {
                 // un rayon aléatoire DANS ce pixel
                 Ray ray = camera.getRay(x, y);
                 
                 // 4. Lancer le rayon et ACCUMULER la couleur
-                pixel_color += CastRay(ray, objects, light);
+                pixelColor += CastRay(ray, objects, light);
             }
             
             // 5. Faire la MOYENNE de toutes les couleurs
-            Color final_color = pixel_color / (float)samples_per_pixel;
+            Color finalColor = pixelColor / (float)samplesPerPixel;
 
             // 6. CLAMPER la couleur finale 
-            final_color.clamp(0.0f, 0.999f); 
+            finalColor.clamp(0.0f, 0.999f); 
             
-            image.SetPixel(x, y, final_color);
+            image.SetPixel(x, y, finalColor);
         }
     }
 

@@ -2,57 +2,57 @@
 #include "../raymath/Utils.hpp" 
 
 Camera::Camera(int w, int h)
-    : image_width(w), image_height(h)
+    : imageWidth(w), imageHeight(h)
 {
     Vector3 pos(0, 0, 0);
-    Vector3 look_dir(0, 0, 1);
-    initialize(pos, look_dir);
+    Vector3 lookDir(0, 0, 1);
+    initialize(pos, lookDir);
 }
 
 Camera::Camera(const Vector3 &pos, const Vector3 &dir, int w, int h)
-    : image_width(w), image_height(h)
+    : imageWidth(w), imageHeight(h)
 {
     initialize(pos, dir.Normalized());
 }
 
-void Camera::initialize(const Vector3& pos, const Vector3& look_dir) {
+void Camera::initialize(const Vector3& pos, const Vector3& lookDir) {
     position = pos;
 
-    float aspect_ratio = (float)image_width / (float)image_height;
+    float aspect_ratio = (float)imageWidth / (float)imageHeight;
 
     // Déterminer les dimensions du viewport
     // normY va de -1 à 1, donc la hauteur est de 2.0
-    float viewport_height = 2.0f; 
-    float viewport_width = viewport_height * aspect_ratio;
+    float viewportHeight = 2.0f; 
+    float viewportWidth = viewportHeight * aspect_ratio;
     
-    // "focal_length" est la distance Z (4.0f) de votre ancienne logique
-    float focal_length = 4.0f; 
+    // "focalLength" est la distance Z (4.0f) de votre ancienne logique
+    float focalLength = 4.0f; 
 
     // Calculer les vecteurs de base (u, v, w) pour l'orientation de la caméra
-    Vector3 w = look_dir.Normalized();
+    Vector3 w = lookDir.Normalized();
     // u = "droite" (perpendiculaire à 'w' et au 'up' (0,1,0))
     Vector3 u = Vector3(0, 1, 0).Cross(w).Normalized();
     // v = "haut" (perpendiculaire à 'w' et 'u')
     Vector3 v = w.Cross(u);
 
     // Vecteurs de déplacement sur le viewport
-    Vector3 viewport_u = u * viewport_width;
-    Vector3 viewport_v = v * -viewport_height; // v va vers le haut, mais nos pixels Y vont vers le bas
+    Vector3 viewportU = u * viewportWidth;
+    Vector3 viewportV = v * -viewportHeight; // v va vers le haut, mais nos pixels Y vont vers le bas
 
     // Déplacements par pixel
-    pixel_delta_u = viewport_u / (float)image_width;
-    pixel_delta_v = viewport_v / (float)image_height;
+    pixelXincrement = viewportU / (float)imageWidth;
+    pixelYIncrement = viewportV / (float)imageHeight;
 
     // Trouver le point de départ : le pixel (0, 0)
     // (C'est le centre du viewport - la moitié des déplacements)
-    Vector3 viewport_upper_left = pos + (w * focal_length) - (viewport_u / 2.0f) - (viewport_v / 2.0f);
+    Vector3 viewportUpperLeft = pos + (w * focalLength) - (viewportU / 2.0f) - (viewportV / 2.0f);
     
     // On centre sur le pixel (0,0) 
-    pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5f;
+    pixel00Loc = viewportUpperLeft + (pixelXincrement + pixelYIncrement) * 0.5f;
 }
 
     // Retourne un vecteur aléatoire dans le carré [-0.5, +0.5]
-    Vector3 Camera::sample_square() const {
+    Vector3 Camera::sampleSquare() const {
     // Retourne un point aléatoire dans le carré unité [-0.5, -0.5] à [+0.5, +0.5]
     return Vector3(randomFloat() - 0.5f, randomFloat() - 0.5f, 0);
 }
@@ -62,17 +62,17 @@ void Camera::initialize(const Vector3& pos, const Vector3& look_dir) {
     Ray Camera::getRay(int x, int y) const {
     
     // Obtenir un décalage aléatoire DANS le pixel
-    Vector3 offset = sample_square();
+    Vector3 offset = sampleSquare();
     
     // Trouver la position 3D de ce point aléatoire
-    Vector3 pixel_sample = pixel00_loc 
-                         + ((float)x + offset.x) * pixel_delta_u
-                         + ((float)y + offset.y) * pixel_delta_v;
+    Vector3 pixelSample = pixel00Loc 
+                         + ((float)x + offset.x) * pixelXincrement
+                         + ((float)y + offset.y) * pixelYIncrement;
 
     // Créer le rayon
-    Vector3 ray_origin = position;
-    Vector3 ray_direction = (pixel_sample - ray_origin).Normalized();
+    Vector3 rayOrigin = position;
+    Vector3 rayDirection = (pixelSample - rayOrigin).Normalized();
     
-    return Ray(ray_origin, ray_direction);
+    return Ray(rayOrigin, rayDirection);
 }
 

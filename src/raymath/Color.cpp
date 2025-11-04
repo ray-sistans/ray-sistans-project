@@ -44,7 +44,7 @@ Color& Color::operator+=(Color const& col) {
     return *this;
 }
 
-// Averages color (pixel_color / 100)
+// Averages color (pixelColor / 100)
  
 Color Color::operator/(float t) const {
     return Color(r / t, g / t, b / t);
