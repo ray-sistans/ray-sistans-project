@@ -16,5 +16,5 @@ public:
     Sphere();
     Sphere(const Vector3 &c, float r, const Color &col);
 
-    bool intersect(const Ray &ray, float t_min, float t_max, HitRecord& rec) const override;
+    bool intersect(const Ray &ray, float tMin, float tMax, HitRecord& rec) const override;
 };

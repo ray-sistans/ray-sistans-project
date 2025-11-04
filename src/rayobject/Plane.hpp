@@ -11,7 +11,7 @@ public:
     Plane(const Vector3& p, const Vector3& n, const Color& c);
 
 
-    bool intersect(const Ray& r, float t_min, float t_max, HitRecord& rec) const override;
+    bool intersect(const Ray& r, float tMin, float tMax, HitRecord& rec) const override;
 
 public:
     Vector3 point;

@@ -8,27 +8,35 @@ Sphere::Sphere(const Vector3 &c, float r, const Color &col)
     : center(c), radius(r), color(col) {}
 
 bool Sphere::intersect(const Ray& ray, float tMin, float tMax, HitRecord& hitRecord) const {
-    Vector3 originToCenter = ray.origin - center;
-    float quadA = ray.direction.LengthSq();
-    float halfB = originToCenter * ray.direction;
-    float quadC = originToCenter.LengthSq() - radius*radius;
+    // Vector from ray origin to sphere center
+    Vector3 originCenter = ray.origin - center;
+    
+    // Quadratic coefficients for ray-sphere intersection
+    float rayDirectionLengthSq = ray.direction.LengthSq();
+    float dotProduct = originCenter * ray.direction;  // DOT PRODUCT
+    float distanceToSphereSq = originCenter.LengthSq() - radius * radius;
 
-    float discriminant = halfB*halfB - quadA*quadC;
-    if (discriminant < 0) return false;
+    // Discriminant determines number of intersections
+    float discriminant = dotProduct * dotProduct - rayDirectionLengthSq * distanceToSphereSq;
+
+    if (discriminant < 0) 
+        return false;  // Ray misses sphere
+    
     float sqrtDiscriminant = sqrt(discriminant);
 
-    // Find the nearest root that lies in the acceptable range.
-    float root = (-halfB - sqrtDiscriminant) / quadA;
-    if (root < tMin || tMax < root) {
-        root = (-halfB + sqrtDiscriminant) / quadA;
-        if (root < tMin || tMax < root)
+    // Find nearest intersection (entry point)
+    float t = (-dotProduct - sqrtDiscriminant) / rayDirectionLengthSq;
+    
+    // If entry is out of range, check exit point
+    if (t < tMin || tMax < t) {
+        t = (-dotProduct + sqrtDiscriminant) / rayDirectionLengthSq;
+        if (t < tMin || tMax < t)
             return false;
     }
 
-    hitRecord.t = root;
-    hitRecord.point = ray.pointAt(hitRecord.t);
-    Vector3 outwardNormal = (hitRecord.point - center) * (1.0f / radius);
-    hitRecord.normal = outwardNormal;
+    hitRecord.t = t;
+    hitRecord.point = ray.pointAt(t);
+    hitRecord.normal = (hitRecord.point - center) * (1.0f / radius);
     hitRecord.color = color;
 
     return true;
