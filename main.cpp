@@ -14,6 +14,7 @@
 #include "Light.hpp"
 #include "Sphere.hpp"
 #include "Plane.hpp"
+#include "HitRecord.hpp"
 #include "Object.hpp"
 #include "Utils.hpp"
 
@@ -23,7 +24,7 @@ int main()
 {
     const int width = 1920;
     const int height = 1080;
-    const int samplesPerPixel = 10;
+    const int samplesPerPixel = 1;
 
     const auto start = chrono::steady_clock::now();
 

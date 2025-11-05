@@ -2,10 +2,12 @@
 #pragma once
 
 #include <vector>
+#include <cfloat>
 #include "Color.hpp"
 #include "Vector3.hpp"
 #include "Ray.hpp"
 #include "Light.hpp"
+#include "HitRecord.hpp"
 #include "../rayobject/Object.hpp"
 
 class Scene
