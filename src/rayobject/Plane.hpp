@@ -18,4 +18,5 @@ public:
     Vector3 normal;
     Color color;
 
+    float checkerSize;
 };
