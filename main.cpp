@@ -14,7 +14,8 @@
 #include "Plane.hpp"
 #include "HitRecord.hpp"
 #include "Object.hpp"
-#include "Utils.hpp"    
+#include "Utils.hpp"
+
 
 using namespace std;
 
