@@ -7,39 +7,37 @@ Sphere::Sphere()
 Sphere::Sphere(const Vector3 &c, float r, const Color &col)
     : center(c), radius(r), color(col) {}
 
-bool Sphere::intersect(const Ray &ray, Vector3 &intersectionPoint) const
-{
-    // Calculate vector from ray origin to sphere center
-    //oc = origin - center of the sphere
-    Vector3 oc = center - ray.origin;
+bool Sphere::intersect(const Ray& ray, float tMin, float tMax, HitRecord& hitRecord) const {
+    // Vector from ray origin to sphere center
+    Vector3 originCenter = ray.origin - center;
+    
+    // Quadratic coefficients for ray-sphere intersection
+    float rayDirectionLengthSq = ray.direction.LengthSq();
+    float dotProduct = originCenter * ray.direction;  // DOT PRODUCT
+    float distanceToSphereSq = originCenter.LengthSq() - radius * radius;
 
-    // Calculate dot product
-    float dotProd = oc * ray.direction;
+    // Discriminant determines number of intersections
+    float discriminant = dotProduct * dotProduct - rayDirectionLengthSq * distanceToSphereSq;
 
-    // If negative, sphere is behind the ray
-    if (dotProd < 0)
-    {
-        return false;
+    if (discriminant < 0) 
+        return false;  // Ray misses sphere
+    
+    float sqrtDiscriminant = sqrt(discriminant);
+
+    // Find nearest intersection (entry point)
+    float t = (-dotProduct - sqrtDiscriminant) / rayDirectionLengthSq;
+    
+    // If entry is out of range, check exit point
+    if (t < tMin || tMax < t) {
+        t = (-dotProduct + sqrtDiscriminant) / rayDirectionLengthSq;
+        if (t < tMin || tMax < t)
+            return false;
     }
 
-    // Calculate point P on ray closest to sphere center
-    //op = Multiply the dot product with the ray's direction vector
-    Vector3 op = ray.direction * dotProd;
-    Vector3 p = ray.origin + op;
-
-    // Calculate distance from P to sphere center
-    // cp = Displacement vector from c to p
-    Vector3 cp = p - center;
-    float lenCP = cp.Length();
-
-    if (lenCP > radius)
-    {
-        return false;
-    }
-
-    // Calculate exact intersection point
-    float a = std::sqrt(radius * radius - lenCP * lenCP);
-    intersectionPoint = p + (ray.direction * (-a));
+    hitRecord.t = t;
+    hitRecord.point = ray.pointAt(t);
+    hitRecord.normal = (hitRecord.point - center) * (1.0f / radius);
+    hitRecord.color = color;
 
     return true;
 }

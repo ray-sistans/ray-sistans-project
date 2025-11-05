@@ -12,8 +12,10 @@
 #include "Light.hpp"
 #include "Sphere.hpp"
 #include "Plane.hpp"
+#include "HitRecord.hpp"
 #include "Object.hpp"
-#include "Utils.hpp"    
+#include "Utils.hpp"
+
 
 using namespace std;
 
@@ -24,53 +26,38 @@ Vector3 Reflect(const Vector3& direction, const Vector3& normal)
     return direction - 2.0f * projection * normal;
 }
 
-Color CastRay(
-  const Ray &ray, 
-  const std::vector<Object*>& objects, 
-  const Light& light, 
-  int reflect = 0) 
-  {
-    float nearestObject = 99999.0f; // Start with "infinity"
+Color castRay(const Ray &ray, const std::vector<Object*>& objects, const Light& light, int recursionDepth = 0){
+    HitRecord closestHitRecord;
+    float closestIntersection = FLT_MAX;
     bool didHit = false;
-    
-    Vector3 hitPoint;   // Final intersection point of the *closest* object
-    Color   hitColor;   // Color of the *closest* object
-    Vector3 hitNormal;  // Surface normal of the *closest* object (for lighting)
 
-    Vector3 tempHitPoint; 
-
-    for (const auto& obj : objects) {
-      Vector3 tempHitPoint;
-      if (obj->intersect(ray, tempHitPoint)) {
-          float objectDistance = (tempHitPoint - ray.origin).Length();
-          if (objectDistance < nearestObject) {
-              nearestObject = objectDistance;
-              hitPoint = tempHitPoint;
-              hitColor = obj->getColor();
-              hitNormal = obj->getNormal(hitPoint);
-              didHit = true;
-          }
-      }
+    for (const auto &obj : objects) {
+        HitRecord tempHitRecord;
+        if (obj->intersect(ray, 0.001f, closestIntersection, tempHitRecord)) {
+            didHit = true;
+            closestIntersection = tempHitRecord.t;
+            closestHitRecord = tempHitRecord;
+        }
     }
 
     if (didHit)
     {
         // Calculate the direction vector from the hit point *to* the light source
-        Vector3 lightDir = (light.position - hitPoint).Normalized();
+        Vector3 lightDirection = (light.position - closestHitRecord.point).Normalized();
 
         // Calculate the diffuse intensity (dot product)
-        float intensity = std::max(0.0f, hitNormal * lightDir); // intensité n'est pas négative
+        float diffuseIntensity = std::max(0.0f, closestHitRecord.normal * lightDirection); // intensité n'est pas négative
         
-        // Ambient light + Diffuse light
-        Color finalColor = hitColor * (0.1f + 0.9f * intensity);
+        // Final color = Ambient light + Diffuse light
+        Color finalColor = closestHitRecord.color * (0.1f + 0.9f * diffuseIntensity);
         
-        if (reflect < 4)
+        if (recursionDepth < 4)
         {
-            Vector3 reflectDir = Reflect(ray.direction, hitNormal);
-            // Décaler le point d'origine pour éviter l'auto-intersection
-            Ray reflectRay(hitPoint + hitNormal * 0.001f, reflectDir);
+            Vector3 reflectionDirection = Reflect(ray.direction, closestHitRecord.normal).Normalized();
+
+            Ray reflectionRay(closestHitRecord.point + closestHitRecord.normal * 0.001f, reflectionDirection);
             
-            Color reflectedColor = CastRay(reflectRay, objects, light, reflect + 1);
+            Color reflectedColor = castRay(reflectionRay, objects, light, recursionDepth + 1);
 
             // intensity of the reflection (0.5 = 50% de réflectivité)
             finalColor = finalColor + 0.5f * reflectedColor;
@@ -121,7 +108,7 @@ int main()
                 Ray ray = camera.getRay(x, y);
                 
                 // 4. Lancer le rayon et ACCUMULER la couleur
-                pixelColor += CastRay(ray, objects, light);
+                pixelColor += castRay(ray, objects, light);
             }
             
             // 5. Faire la MOYENNE de toutes les couleurs
@@ -143,4 +130,3 @@ int main()
 
     return 0;
 }
-
