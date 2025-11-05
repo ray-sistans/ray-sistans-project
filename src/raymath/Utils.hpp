@@ -2,12 +2,12 @@
 
 #include <random>
 #include <cmath>
+#include <limits>
 
 // Returns a random float between 0.0 (inclusive) and 1.0 (exclusive)
-
 inline float randomFloat() {
-    static std::uniform_real_distribution<float> distribution(0.0f, 1.0f);
-    static std::mt19937 generator;
+    thread_local static std::uniform_real_distribution<float> distribution(0.0f, 1.0f); //thradlocal pour etre safe
+    thread_local static std::mt19937 generator;
     return distribution(generator);
 }
 

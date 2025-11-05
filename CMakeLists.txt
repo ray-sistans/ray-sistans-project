@@ -5,6 +5,11 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 add_executable(raytracer main.cpp)
+find_package(OpenMP REQUIRED)
+if (OpenMP_CXX_FOUND)
+    target_link_libraries(raytracer PUBLIC OpenMP::OpenMP_CXX)
+endif()
+
 
 
 target_include_directories(raytracer PUBLIC

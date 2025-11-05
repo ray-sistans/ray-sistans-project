@@ -2,23 +2,24 @@
 #include <vector>
 #include <cfloat>
 #include <limits>
-#include <algorithm>
 #include <string>
 #include <chrono>
+#include <omp.h>
+#include <thread>
 #include "Scene.hpp"
-#include "Color.hpp"
 #include "Image.hpp"
-#include "Vector3.hpp"
-#include "Ray.hpp"
 #include "Camera.hpp"
+#include "Utils.hpp"
+#include "Color.hpp"
 #include "Light.hpp"
 #include "Sphere.hpp"
 #include "Plane.hpp"
-#include "HitRecord.hpp"
-#include "Object.hpp"
-#include "Utils.hpp"
 
 using namespace std;
+using namespace std::chrono;
+
+// Interrupteur 0 single thread 1 mt
+#define MT 1
 
 int main()
 {
@@ -26,7 +27,7 @@ int main()
     const int height = 1080;
     const int samplesPerPixel = 1;
 
-    const auto start = chrono::steady_clock::now();
+    const auto start = steady_clock::now();
 
     const Light light = Light(Vector3(0, 10, 10), Color(1, 1, 1));
     Image image(width, height, Color(0, 0, 0));
@@ -44,7 +45,46 @@ int main()
 
     cout << "Rendering " << width << "x" << height << " with "
          << samplesPerPixel << " samples per pixel..." << endl;
+#if MT
+    cout << "Mode: Multithreading" << endl;
+#else
+    cout << "Mode: Single-threading" << endl;
+#endif
 
+#if MT
+    omp_set_num_threads(8); // mon cpu fait 8 coeurs 
+    #pragma omp parallel for schedule(static)
+    for (int y = 0; y < height; ++y)
+    {
+        vector<Color> row(width); // buffer local pour la ligne
+
+        for (int x = 0; x < width; ++x)
+        {
+            Color pixelColor(0, 0, 0);
+            for (int s = 0; s < samplesPerPixel; ++s)
+            {
+                Ray ray = camera.getRay(x, y);
+                pixelColor += scene.castRay(ray);
+            }
+            Color finalColor = pixelColor / (float)samplesPerPixel;
+            finalColor.clamp(0.0f, 0.999f);
+            row[x] = finalColor;
+        }
+
+        for (int x = 0; x < width; ++x)
+            image.SetPixel(x, y, row[x]);
+
+        if (y % 50 == 0)
+        {
+            {
+                cout << "Progress: " << (int)((float)y / (float)height * 100.0f) << "%\r" << flush;
+            }
+        }
+    }
+    cout << endl;
+
+#else
+    // Version single-thread 
     for (int y = 0; y < height; ++y)
     {
         if (y % 50 == 0)
@@ -55,35 +95,27 @@ int main()
         for (int x = 0; x < width; ++x)
         {
             Color pixelColor(0, 0, 0);
-
             for (int s = 0; s < samplesPerPixel; ++s)
             {
-                // un rayon aléatoire DANS ce pixel
                 Ray ray = camera.getRay(x, y);
-
-                // 4. Lancer le rayon et ACCUMULER la couleur
                 pixelColor += scene.castRay(ray);
             }
-
-            // 5. Faire la MOYENNE de toutes les couleurs
             Color finalColor = pixelColor / (float)samplesPerPixel;
-
-            // 6. CLAMPER la couleur finale
             finalColor.clamp(0.0f, 0.999f);
-
             image.SetPixel(x, y, finalColor);
         }
     }
+#endif
 
-    const auto end = chrono::steady_clock::now();
+    const auto end = steady_clock::now();
+    const auto duration = duration_cast<seconds>(end - start).count();
 
-    cout << "Progress: 100%  built in " << chrono::duration_cast<chrono::seconds>(end - start).count() << "s." << endl;
     image.WriteFile("output.png");
 
     for (auto obj : objects)
         delete obj;
-
-    cout << "Done! Image saved to output.png" << endl;
-
+    
+    cout << "Done! Image saved to output.png --- Rendered in " << duration << "s " << endl;
+    image.WriteFile("output.png");
     return 0;
 }
