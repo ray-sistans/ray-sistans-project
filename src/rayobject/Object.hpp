@@ -1,9 +1,10 @@
 #pragma once
 #include "../raymath/Ray.hpp"
-#include "HitRecord.hpp"
+#include "../raymath/HitRecord.hpp"
 
-class Object {
+class Object
+{
 public:
     virtual ~Object() {}
-    virtual bool intersect(const Ray& r, float tMin, float tMax, HitRecord& rec) const = 0;
+    virtual bool intersect(const Ray &r, float tMin, float tMax, HitRecord &rec) const = 0;
 };

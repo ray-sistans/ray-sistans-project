@@ -1,8 +1,9 @@
 #pragma once
-#include "../raymath/Vector3.hpp"
-#include "../raymath/Color.hpp"
+#include "Vector3.hpp"
+#include "Color.hpp"
 
-struct HitRecord {
+struct HitRecord
+{
     Vector3 point;
     Vector3 normal;
     float t;
