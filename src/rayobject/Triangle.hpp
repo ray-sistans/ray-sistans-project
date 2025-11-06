@@ -1,5 +1,4 @@
-#ifndef TRIANGLE_HPP
-#define TRIANGLE_HPP
+#pragma once
 
 #include "Object.hpp"
 #include "../raymath/Vector3.hpp"
@@ -15,4 +14,4 @@ public:
     Material material;
 };
 
-#endif // TRIANGLE_HPP
+
