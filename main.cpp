@@ -41,7 +41,7 @@ int main()
     objects.push_back(new Sphere(Vector3(0, 0, 20), 1.0f, Material::Mirror(Color(1, 0, 0))));  // Red
     objects.push_back(new Sphere(Vector3(-5, 1, 20), 1.0f, Material::Matte(Color(0, 1, 0))));  // Green
     objects.push_back(new Sphere(Vector3(5, -2, 20), 1.0f, Material::Mirror(Color(0, 0, 1)))); // Blue
-    objects.push_back(new Sphere(Vector3(5, -1, 15), 1.0f, Material::Mirror(Color(0, 0, 0)))); // White
+    objects.push_back(new Sphere(Vector3(5, -1, 15), 1.0f, Material::Mirror(Color(0, 0, 0)))); // Black
     objects.push_back(new Sphere(Vector3(-2, -1.5, 10), 1.0f, Material::Gold()));              // Gold
     objects.push_back(new Sphere(Vector3(2, -1.5, 15), 1.0f, Material::Silver()));             // Silver
     objects.push_back(new Sphere(Vector3(-2, -1, 15), 1.0f, Material::Matte(Color(1, 0, 1)))); // Purple
