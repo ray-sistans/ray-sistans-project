@@ -42,7 +42,7 @@ Color Scene::castRay(const Ray &ray, int recursionDepth)
             Vector3 reflected = reflect(ray.direction, closestHitRecord.normal).Normalized();
 
             // Add randomness for brushed metal
-            float fuzziness = closestHitRecord.material->fuzziness; // Increase this for more roughness
+            float fuzziness = closestHitRecord.material->fuzziness;
             Vector3 scattered = (reflected + randomInUnitSphere() * fuzziness).Normalized();
 
             // Use the SCATTERED direction, not the perfect reflection
@@ -50,9 +50,8 @@ Color Scene::castRay(const Ray &ray, int recursionDepth)
 
             Color reflectedColor = castRay(reflectionRay, recursionDepth + 1);
 
-            // Tint reflections with metal color (this makes gold look gold)
-
-            finalColor = finalColor + closestHitRecord.material->reflectivity * reflectedColor; // Increase reflection contribution
+            // Add the reflection to the base color
+            finalColor = finalColor + closestHitRecord.material->reflectivity * reflectedColor;
         }
 
         return finalColor;

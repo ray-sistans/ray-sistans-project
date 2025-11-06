@@ -32,7 +32,7 @@ inline Vector3 randomInUnitSphere()
     while (true)
     {
         Vector3 p = {randomFloat(-1, 1), randomFloat(-1, 1), randomFloat(-1, 1)};
-        if (p * p < 1.0f) // or p.lengthSquared() < 1.0f
+        if (p * p < 1.0f)
             return p;
     }
 }
