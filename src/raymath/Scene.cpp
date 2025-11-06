@@ -1,4 +1,6 @@
 #include "Scene.hpp"
+#include "../raymath/Utils.hpp"
+#include "Material.hpp"
 
 Color Scene::castRay(const Ray &ray, int recursionDepth)
 {
@@ -21,29 +23,46 @@ Color Scene::castRay(const Ray &ray, int recursionDepth)
     {
         // Calculate the direction vector from the hit point *to* the light source
         Vector3 lightDirection = (light.position - closestHitRecord.point).Normalized();
+        float diffuseIntensity = std::max(0.0f, closestHitRecord.normal * lightDirection);
 
-        // Calculate the diffuse intensity (dot product)
-        float diffuseIntensity = std::max(0.0f, closestHitRecord.normal * lightDirection); // intensité n'est pas négative
+        // Render the light source as an emissive sphere
+        if ((light.position - closestHitRecord.point).Length() < 3.0f)
+        {
+            diffuseIntensity = 1.0f;
+        }
+        // Final color = base color with 0.2 ambient light and 0.8 diffuse light
+        Color finalColor = closestHitRecord.material->color * (0.2f + 0.8f * diffuseIntensity) * light.color;
 
-        // Final color = Ambient light + Diffuse light
-        Color finalColor = closestHitRecord.color * (0.1f + 0.9f * diffuseIntensity);
+        // For matte materials, return diffuse lighting
+        if (closestHitRecord.material->reflectivity < 0.01f)
+        {
+            return finalColor;
+        }
 
+        // Handle reflections for reflective materials
         if (recursionDepth < 4)
         {
+            // Calculate perfect reflection
             Vector3 reflectionDirection = reflect(ray.direction, closestHitRecord.normal).Normalized();
 
-            Ray reflectionRay(closestHitRecord.point + closestHitRecord.normal * 0.001f, reflectionDirection);
+            // Add noise: randomize reflections according to fuzziness
+            float fuzziness = closestHitRecord.material->fuzziness;
+            Vector3 scatteredDirection = (reflectionDirection + randomInUnitSphere() * fuzziness).Normalized();
+
+            Ray reflectionRay(closestHitRecord.point + closestHitRecord.normal * 0.001f, scatteredDirection);
 
             Color reflectedColor = castRay(reflectionRay, recursionDepth + 1);
 
-            // intensity of the reflection (0.5 = 50% de réflectivité)
-            finalColor = finalColor + 0.5f * reflectedColor;
+            reflectedColor = reflectedColor * 0.9f; // dim reflections to prevent over reflections
+
+            // Add the reflection to the base color
+            finalColor = finalColor + closestHitRecord.material->reflectivity * reflectedColor;
         }
+
         return finalColor;
     }
 
-    // (didHit == false)
-    return Color(0, 0, 0);
+    return Color(0, 0, 0); // Background color
 }
 
 Vector3 Scene::reflect(const Vector3 &direction, const Vector3 &normal)
