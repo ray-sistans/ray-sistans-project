@@ -65,7 +65,7 @@ bool Plane::intersect(const Ray &ray, float tMin, float tMax, HitRecord &hitReco
             }
             else
             {
-                hitRecord.material = new Material(Material::BrushedMetal(Color(0.0f, 0.0f, 0.0f)));
+                hitRecord.material = new Material(Material::PolishedMetal(Color(0.0f, 0.0f, 0.0f)));
             }
 
             return true;
