@@ -41,7 +41,7 @@ int main()
     vector<Object *> objects;
     // spheres
     objects.push_back(new Sphere(light.position, 1.25f, Material(light.color, 1.0f, 0.0f)));                // Light
-    objects.push_back(new Sphere(Vector3(0, 0, 20), 1.0f, Material::Mirror(Color(1.0, 0, 0))));             // Orange middle
+    objects.push_back(new Sphere(Vector3(0, 0, 20), 1.0f, Material::Mirror(Color(1.0, 0, 0))));             // Red
     objects.push_back(new Sphere(Vector3(-4, 3, 25), 1.0f, Material(Color(0.35, 0.26, 0.73), 0.9f, 0.2f))); // Purple
     objects.push_back(new Sphere(Vector3(-5, 1, 20), 1.0f, Material::Matte(Color(0.88, 0.33, 0.56))));      // Pink
     objects.push_back(new Sphere(Vector3(5, -2, 20), 1.0f, Material::Mirror(Color(0, 0, 1))));              // Blue
@@ -51,7 +51,7 @@ int main()
 
     objects.push_back(new Sphere(Vector3(-2, -1.5, 10), 1.0f, Material::Gold()));                                   // Gold
     objects.push_back(new Sphere(Vector3(2, -1.5, 15), 1.0f, Material::Silver()));                                  // Silver
-    objects.push_back(new Sphere(Vector3(0.75, -2.25, 16), 0.25f, Material(Color(0.95, 0.5, 0.3), 0.85f, 0.25f)));  // Coppper
+    objects.push_back(new Sphere(Vector3(0.75, -2.25, 16), 0.25f, Material(Color(0.95, 0.5, 0.3), 0.85f, 0.25f)));  // Copper
     objects.push_back(new Sphere(Vector3(1.0, -2.25, 12.5), 0.25f, Material(Color(0.2, 0.2, 0.22), 0.75f, 0.35f))); // Dark steel
     objects.push_back(new Sphere(Vector3(2.5, -2.25, 13), 0.25f, Material(Color(0.2, 0.9, 0.9), 0.75f, 0.35f)));    // Diamond
     objects.push_back(new Sphere(Vector3(5, -2.4, 12.5), 0.1f, Material::PolishedMetal(Color(0.0, 0.8, 0.5))));     // Emerald
