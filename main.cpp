@@ -18,6 +18,7 @@
 #include "Plane.hpp"
 #include "Sphere.hpp"
 #include "Material.hpp"
+#include "Triangle.hpp"
 
 using namespace std;
 using namespace std::chrono;
@@ -38,6 +39,7 @@ int main()
     Camera camera(width, height);
 
     vector<Object *> objects;
+    // spheres
     objects.push_back(new Sphere(light.position, 1.25f, Material(light.color, 0.2f, 1.0f)));   // Light
     objects.push_back(new Sphere(Vector3(0, 0, 20), 1.0f, Material::Mirror(Color(1, 0, 0))));  // Red
     objects.push_back(new Sphere(Vector3(-5, 1, 20), 1.0f, Material::Matte(Color(0, 1, 0))));  // Green
@@ -46,6 +48,8 @@ int main()
     objects.push_back(new Sphere(Vector3(-2, -1.5, 10), 1.0f, Material::Gold()));              // Gold
     objects.push_back(new Sphere(Vector3(2, -1.5, 15), 1.0f, Material::Silver()));             // Silver
     objects.push_back(new Sphere(Vector3(-2, -1, 15), 1.0f, Material::Matte(Color(1, 0, 1)))); // Purple
+    // triangles
+    objects.push_back(new Triangle(Vector3(-1, 0.7, 8), Vector3(1, 0.7, 8), Vector3(0, 1.7, 8), Material::Gold())); // Gold
     objects.push_back(new Plane(Vector3(0, -2.5, 0), Vector3(0, 1, 0), Material::Mirror(Color(0.8, 0.8, 0.8))));
 
     Scene scene(objects, light);
