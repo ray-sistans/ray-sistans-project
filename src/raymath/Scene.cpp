@@ -21,34 +21,34 @@ Color Scene::castRay(const Ray &ray, int recursionDepth)
 
     if (didHit)
     {
-        // For matte objects, use diffuse lighting
+        // Calculate the direction vector from the hit point *to* the light source
+        Vector3 lightDirection = (light.position - closestHitRecord.point).Normalized();
+        float diffuseIntensity = std::max(0.0f, closestHitRecord.normal * lightDirection);
+
+        // Final color = base color with 0.2 ambient light and 0.8 diffuse light
+        Color finalColor = closestHitRecord.material->color * (0.2f + 0.8f * diffuseIntensity) * light.color;
+
+        // For matte materials, return diffuse lighting
         if (closestHitRecord.material->reflectivity < 0.01f)
         {
-            // Simple directional light from top
-            Vector3 lightDir = Vector3(0.3f, 1.0f, -0.5f).Normalized();
-            float diffuse = std::max(0.0f, closestHitRecord.normal * lightDir);
-
-            // Ambient + diffuse
-            float ambient = 0.2f;
-            float lighting = ambient + (1.0f - ambient) * diffuse;
-
-            return closestHitRecord.material->color * lighting;
+            return finalColor;
         }
-        Color finalColor = closestHitRecord.material->color * 0.3f; // Base color contribution
 
+        // Handle reflections for reflective materials
         if (recursionDepth < 4)
         {
             // Calculate perfect reflection
-            Vector3 reflected = reflect(ray.direction, closestHitRecord.normal).Normalized();
+            Vector3 reflectionDirection = reflect(ray.direction, closestHitRecord.normal).Normalized();
 
-            // Add randomness for brushed metal
+            // Add noise: randomize reflections according to fuzziness
             float fuzziness = closestHitRecord.material->fuzziness;
-            Vector3 scattered = (reflected + randomInUnitSphere() * fuzziness).Normalized();
+            Vector3 scatteredDirection = (reflectionDirection + randomInUnitSphere() * fuzziness).Normalized();
 
-            // Use the SCATTERED direction, not the perfect reflection
-            Ray reflectionRay(closestHitRecord.point + closestHitRecord.normal * 0.001f, scattered);
+            Ray reflectionRay(closestHitRecord.point + closestHitRecord.normal * 0.001f, scatteredDirection);
 
             Color reflectedColor = castRay(reflectionRay, recursionDepth + 1);
+
+            reflectedColor = reflectedColor * 0.9f; // dim reflections to prevent over reflections
 
             // Add the reflection to the base color
             finalColor = finalColor + closestHitRecord.material->reflectivity * reflectedColor;
@@ -56,6 +56,7 @@ Color Scene::castRay(const Ray &ray, int recursionDepth)
 
         return finalColor;
     }
+
     return Color(0, 0, 0); // Background color
 }
 

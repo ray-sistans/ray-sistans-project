@@ -29,12 +29,12 @@ public:
 
     static Material BrushedMetal(Color c)
     {
-        return Material(c, 0.9f, 0.2f);
+        return Material(c, 0.9f, 0.35f);
     }
 
     static Material Gold()
     {
-        return Material(Color(1.0f, 0.77f, 0.33f), 0.9f, 0.2f);
+        return Material(Color(1.0f, 0.77f, 0.33f), 0.9f, 0.3f);
     }
 
     static Material Silver()

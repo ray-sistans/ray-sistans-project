@@ -33,7 +33,7 @@ int main()
 
     const auto start = steady_clock::now();
 
-    const Light light = Light(Vector3(0, 10, 10), Color(1, 1, 1));
+    const Light light = Light(Vector3(0, 10, 10), Color(0.9f, 0.9f, 0.9f));
     Image image(width, height, Color(0, 0, 0));
     Camera camera(width, height);
 

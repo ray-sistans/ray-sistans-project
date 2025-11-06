@@ -61,7 +61,7 @@ bool Plane::intersect(const Ray &ray, float tMin, float tMax, HitRecord &hitReco
             // 5. Appliquer la couleur correspondante
             if (isWhite)
             {
-                hitRecord.material = new Material(Material::BrushedMetal(Color(1.0f, 1.0f, 1.0f)));
+                hitRecord.material = new Material(Material::BrushedMetal(Color(0.6f, 0.6f, 0.6f)));
             }
             else
             {
