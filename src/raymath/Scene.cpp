@@ -25,6 +25,11 @@ Color Scene::castRay(const Ray &ray, int recursionDepth)
         Vector3 lightDirection = (light.position - closestHitRecord.point).Normalized();
         float diffuseIntensity = std::max(0.0f, closestHitRecord.normal * lightDirection);
 
+        // Render the light source as an emissive sphere
+        if ((light.position - closestHitRecord.point).Length() < 3.0f)
+        {
+            diffuseIntensity = 1.0f;
+        }
         // Final color = base color with 0.2 ambient light and 0.8 diffuse light
         Color finalColor = closestHitRecord.material->color * (0.2f + 0.8f * diffuseIntensity) * light.color;
 

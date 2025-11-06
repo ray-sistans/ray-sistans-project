@@ -38,6 +38,7 @@ int main()
     Camera camera(width, height);
 
     vector<Object *> objects;
+    objects.push_back(new Sphere(light.position, 1.25f, Material(light.color, 0.2f, 1.0f)));   // Light
     objects.push_back(new Sphere(Vector3(0, 0, 20), 1.0f, Material::Mirror(Color(1, 0, 0))));  // Red
     objects.push_back(new Sphere(Vector3(-5, 1, 20), 1.0f, Material::Matte(Color(0, 1, 0))));  // Green
     objects.push_back(new Sphere(Vector3(5, -2, 20), 1.0f, Material::Mirror(Color(0, 0, 1)))); // Blue
