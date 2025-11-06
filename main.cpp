@@ -12,8 +12,12 @@
 #include "Utils.hpp"
 #include "Color.hpp"
 #include "Light.hpp"
-#include "Sphere.hpp"
+#include "HitRecord.hpp"
+#include "Object.hpp"
+#include "Utils.hpp"
 #include "Plane.hpp"
+#include "Sphere.hpp"
+#include "Material.hpp"
 
 using namespace std;
 using namespace std::chrono;
@@ -23,9 +27,9 @@ using namespace std::chrono;
 
 int main()
 {
-    const int width = 1920;
-    const int height = 1080;
-    const int samplesPerPixel = 1;
+    const int width = 3840;
+    const int height = 2160;
+    const int samplesPerPixel = 2;
 
     const auto start = steady_clock::now();
 
@@ -34,12 +38,14 @@ int main()
     Camera camera(width, height);
 
     vector<Object *> objects;
-    objects.push_back(new Sphere(Vector3(0, 0, 20), 1.0f, Color(1, 0, 0)));     // Red
-    objects.push_back(new Sphere(Vector3(-5, 1, 20), 1.0f, Color(0, 1, 0)));    // Green
-    objects.push_back(new Sphere(Vector3(5, -2, 20), 1.0f, Color(0, 0, 1)));    // Blue
-    objects.push_back(new Sphere(Vector3(-2, -1.5, 10), 1.0f, Color(1, 1, 0))); // Yellow
-    objects.push_back(new Sphere(Vector3(-2, -1, 15), 1.0f, Color(1, 0, 1)));   // Purple
-    objects.push_back(new Plane(Vector3(0, -2.5, 0), Vector3(0, 1, 0), Color(0.8, 0.8, 0.8)));
+    objects.push_back(new Sphere(Vector3(0, 0, 20), 1.0f, Material::Mirror(Color(1, 0, 0))));  // Red
+    objects.push_back(new Sphere(Vector3(-5, 1, 20), 1.0f, Material::Matte(Color(0, 1, 0))));  // Green
+    objects.push_back(new Sphere(Vector3(5, -2, 20), 1.0f, Material::Mirror(Color(0, 0, 1)))); // Blue
+    objects.push_back(new Sphere(Vector3(5, -1, 15), 1.0f, Material::Mirror(Color(0, 0, 0)))); // White
+    objects.push_back(new Sphere(Vector3(-2, -1.5, 10), 1.0f, Material::Gold()));              // Gold
+    objects.push_back(new Sphere(Vector3(2, -1.5, 15), 1.0f, Material::Silver()));             // Silver
+    objects.push_back(new Sphere(Vector3(-2, -1, 15), 1.0f, Material::Matte(Color(1, 0, 1)))); // Purple
+    objects.push_back(new Plane(Vector3(0, -2.5, 0), Vector3(0, 1, 0), Material::Mirror(Color(0.8, 0.8, 0.8))));
 
     Scene scene(objects, light);
 
@@ -52,8 +58,8 @@ int main()
 #endif
 
 #if MT
-    omp_set_num_threads(8); // mon cpu fait 8 coeurs 
-    #pragma omp parallel for schedule(static)
+    omp_set_num_threads(8); // mon cpu fait 8 coeurs
+#pragma omp parallel for schedule(static)
     for (int y = 0; y < height; ++y)
     {
         vector<Color> row(width); // buffer local pour la ligne
@@ -84,7 +90,7 @@ int main()
     cout << endl;
 
 #else
-    // Version single-thread 
+    // Version single-thread
     for (int y = 0; y < height; ++y)
     {
         if (y % 50 == 0)
@@ -114,7 +120,7 @@ int main()
 
     for (auto obj : objects)
         delete obj;
-    
+
     cout << "Done! Image saved to output.png --- Rendered in " << duration << "s " << endl;
     image.WriteFile("output.png");
     return 0;
